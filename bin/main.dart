@@ -155,7 +155,12 @@ class Creature {
   void _combineGenes(Creature secondParent) {
     _logger.log("Parents: ${_primitiveInscription}, "
         "${secondParent._primitiveInscription}");
+    List<String> _child = genMutation(secondParent);
+    _primitiveInscription = new List.from(_child);
+    _logger.log("\tChild ${_primitiveInscription}");
+  }
 
+  List<String> genMutation(Creature secondParent) {
     List<String> _child = new List(_fitness);
     for (int counter = 0; counter < _fitness; counter++) {
       int randomMutalValue = _random.nextInt(100);
@@ -169,14 +174,7 @@ class Creature {
         _child[counter] = secondParent._primitiveInscription[counter];
       }
     }
-
-    _primitiveInscription = new List.from(_child);
-    _logger.log("\tChild ${_primitiveInscription}");
-  }
-  List<String> _genMutation(List<String> gene) {
-    _logger.log("Gen mutation method.");
-    gene[_random.nextInt(_fitness)] = randomString.randomString(1);
-    return gene;
+    return _child;
   }
   operator+(other) {
     _logger.log("Reproduce method");
