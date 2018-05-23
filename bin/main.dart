@@ -107,8 +107,11 @@ class Population {
           ? true : false;
   void _removeWeak(int currentPopulationSize) {
     _logger.log("Remove old -  method.");
-    for (int counter = _population.lastKey(); counter >= _population.firstKey() + 2; counter--) {
-      _population.remove(_population.lastKey());
+    if (_population.length > 3) {
+      for (int counter = _population.lastKey(); counter >=
+          _population.firstKey() + 2; counter--) {
+        _population.remove(_population.lastKey());
+      }
     }
   }
   void _initiatingPopulation(int initialPopulation, String correctCharacters) {
