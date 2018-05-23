@@ -8,9 +8,11 @@ import 'dart:collection';
 main(List<String> arguments) {
   Logger logger = new Logger("Main");
   logger.log("Main method started.");
-  final String _finalInscription = "Hello World!";
+  final String _finalInscription = "Hello World";
   final int _fitness = _finalInscription.length;
-  Population _population = new Population(_finalInscription, _fitness, 400, logger);
+  final String _correctCharacters = "AĄBCĆDEĘFGHIJKLŁMNŃOÓPQRSŚTUVWXYZŹŻ"
+      + "aąbcćdeęfghijklłmnńoópqrsśtuvwxyzźż";
+  Population _population = new Population(_finalInscription, _correctCharacters, _fitness, 400, logger);
   while (!_population.calculatePopulationCondition()) {
     logger.log("New population.");
     _population = new Population.mutation();
@@ -20,10 +22,17 @@ main(List<String> arguments) {
  *
  */
 class GenerateRandomInscription {
-  final int _fitness;
-  GenerateRandomInscription(this._fitness) : assert(_fitness != 0);
+  int _fitness;
+  int _correntCharactersLenght;
+  String _correctCharacters;
+  math.Random _random;
+  GenerateRandomInscription(this._fitness, this._correctCharacters)
+      : assert(_fitness != 0) {
+    _correntCharactersLenght = _correctCharacters.length;
+    _random = new math.Random();
+  }
   List<String> build() {
-    return new List.generate(_fitness, (_) => randomString.randomString(1));
+    return new List.generate(_fitness, (_) => _correctCharacters[_random.nextInt(_correntCharactersLenght)]);
   }
 }
 /**
@@ -31,23 +40,25 @@ class GenerateRandomInscription {
  */
 class Population {
   static String _finalInscription;
+  static String _correctCharacters;
   static int _fitness;
   static SplayTreeMap<int, List<Creature>> _population;
   static math.Random _random;
   static Logger _logger;
 
-  Population(String finalInscription, int fitness, int initialPopulation, Logger logger)
-      :assert(finalInscription != ""), assert(fitness != 0),
-        assert(initialPopulation != 0) {
+  Population(String finalInscription, String correctCharacters, int fitness, int initialPopulation, Logger logger)
+      :assert(finalInscription != ""), assert(correctCharacters != ""),
+        assert(fitness != 0), assert(initialPopulation != 0) {
     logger.log("Default constructor start.");
     _finalInscription = finalInscription;
+    _correctCharacters = correctCharacters;
     _fitness = fitness;
     _random = new math.Random();
 
     _logger = logger;
 
     _population = new SplayTreeMap<int, List<Creature>>();
-    _initiatingPopulation(initialPopulation);
+    _initiatingPopulation(initialPopulation, correctCharacters);
     logger.log("Default constructor end.");
   }
   Population.mutation() {
@@ -66,7 +77,6 @@ class Population {
           Creature creature = _listKeys[counter] + _listKeys[counter + 1];
           creature.live();
 
-        // "Założyć, że warunek jest zawsze spełniony
           List<Creature> creatureList;
           if (!_childPopulation.containsKey(creature._creatureFitness)) {
             List<Creature> creatureList = new List();
@@ -97,22 +107,18 @@ class Population {
           ? true : false;
   void _removeWeak(int currentPopulationSize) {
     _logger.log("Remove old -  method.");
-    _population.remove(_population.lastKey());
-/*
-    int minimum = (_population.length * 0.3).round();
-    for (int counter = _population.length; counter > minimum; counter--) {
+    for (int counter = _population.lastKey(); counter >= _population.firstKey() + 2; counter--) {
       _population.remove(_population.lastKey());
     }
-*/
   }
-  void _initiatingPopulation(int initialPopulation) {
+  void _initiatingPopulation(int initialPopulation, String correctCharacters) {
     _logger.log("Initializa population function.");
     List<String> _primitiveInscription;
     Creature _creature;
     for (int counter = 0; counter < initialPopulation - 1; counter++) {
       _logger.log("Get all creatures, and randomize characters.");
-      _primitiveInscription = (new GenerateRandomInscription(_fitness)).build();
-      _creature = new Creature(_finalInscription, _primitiveInscription, _fitness, _logger);
+      _primitiveInscription = (new GenerateRandomInscription(_fitness, correctCharacters)).build();
+      _creature = new Creature(_finalInscription, _correctCharacters,_primitiveInscription, _fitness, _logger);
       _creature.live();
       if (!_population.containsKey(_creature._creatureFitness)) {
         List<Creature> creatureList = new List();
@@ -132,12 +138,13 @@ class Population {
  */
 class Creature {
   final String _finalInscription;
+  final String _correctCharacters;
   final int _fitness;
   static math.Random _random;
   final Logger _logger;
   List<String> _primitiveInscription;
   int _creatureFitness;
-  Creature(this._finalInscription, this._primitiveInscription,
+  Creature(this._finalInscription, this._correctCharacters, this._primitiveInscription,
       this._fitness, this._logger) : assert(_finalInscription != ""),
         assert(_fitness != 0), assert(_finalInscription.length != 0) {
     _random = new math.Random();
@@ -145,18 +152,25 @@ class Creature {
   String get finalInscription => _finalInscription;
   List<String> get primitiveInscription => _primitiveInscription;
   int get creatureFitness => _creatureFitness;
-  void _combineGenes(int _pivot, Creature secondParent) {
+  void _combineGenes(Creature secondParent) {
     _logger.log("Parents: ${_primitiveInscription}, "
         "${secondParent._primitiveInscription}");
 
-    List<String> parentFirstGenes = _primitiveInscription.take(_pivot)
-        .toList();
-    List<String> parentSecondCombines =
-    secondParent._primitiveInscription.getRange(_pivot, _fitness).toList();
-    _primitiveInscription = _genMutation(
-        new List.from(parentFirstGenes)..addAll(parentSecondCombines)
-    );
+    List<String> _child = new List(_fitness);
+    for (int counter = 0; counter < _fitness; counter++) {
+      int randomMutalValue = _random.nextInt(100);
+      if (randomMutalValue <= 1) {
+        _child[counter] = _correctCharacters[_random.nextInt(_fitness)];
+      }
+      else if(randomMutalValue <= 60) {
+        _child[counter] = _primitiveInscription[counter];
+      }
+      else {
+        _child[counter] = secondParent._primitiveInscription[counter];
+      }
+    }
 
+    _primitiveInscription = new List.from(_child);
     _logger.log("\tChild ${_primitiveInscription}");
   }
   List<String> _genMutation(List<String> gene) {
@@ -166,8 +180,7 @@ class Creature {
   }
   operator+(other) {
     _logger.log("Reproduce method");
-    int _pivot = _random.nextInt(_fitness);
-    _combineGenes(_pivot, other);
+    _combineGenes(other);
     return this;
   }
   void live() {
