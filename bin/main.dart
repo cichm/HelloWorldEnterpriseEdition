@@ -1,5 +1,4 @@
 import 'package:EA_DART/EA_DART.dart' as EA_DART;
-import 'package:random_string/random_string.dart' as randomString;
 import 'dart:math' as math;
 import 'dart:collection';
 /**
@@ -67,8 +66,9 @@ class Population {
     SplayTreeMap<int, List<Creature>> _childPopulation = new SplayTreeMap();
 
     for (int key in _population.keys) {
-      _logger.log("Key for-loop start");
       _listKeys = new List.from(_population[key]);
+      // TODO: Czasem problem z ewolucją, _listKeys.lenght == 1
+      _logger.log("Key for-loop start: ${key}, ${_population[key][0]._primitiveInscription}, ${_listKeys.length}");
       for (int counter = 0; counter + 1 < _listKeys.length; counter = counter + 2) {
         _logger.log("Randomization parent pairs for-loop.");
         int childsNumber = _random.nextInt(7);
@@ -79,15 +79,13 @@ class Population {
 
           List<Creature> creatureList;
           if (!_childPopulation.containsKey(creature._creatureFitness)) {
-            List<Creature> creatureList = new List();
-            creatureList.add(creature);
-            _childPopulation[creature._creatureFitness] = creatureList;
+            creatureList = new List();
           }
           else {
-            List<Creature> creatureList = new List.from(_childPopulation[creature._creatureFitness]);
-            creatureList.add(creature);
-            _childPopulation[creature._creatureFitness] = creatureList;
+            creatureList = new List.from(_childPopulation[creature._creatureFitness]);
           }
+          creatureList.add(creature);
+          _childPopulation[creature._creatureFitness] = creatureList;
         }
       }
     }
@@ -120,19 +118,24 @@ class Population {
     Creature _creature;
     for (int counter = 0; counter < initialPopulation - 1; counter++) {
       _logger.log("Get all creatures, and randomize characters.");
-      _primitiveInscription = (new GenerateRandomInscription(_fitness, correctCharacters)).build();
-      _creature = new Creature(_finalInscription, _correctCharacters,_primitiveInscription, _fitness, _logger);
+      _primitiveInscription = (
+          new GenerateRandomInscription(_fitness, correctCharacters)
+      ).build();
+      _creature = new Creature(
+          _finalInscription, _correctCharacters, _primitiveInscription,
+          _fitness, _logger
+      );
       _creature.live();
+
+      List<Creature> creatureList;
       if (!_population.containsKey(_creature._creatureFitness)) {
-        List<Creature> creatureList = new List();
-        creatureList.add(_creature);
-        _population[_creature._creatureFitness] = creatureList;
+        creatureList = new List();
       }
       else {
-        List<Creature> creatureList = new List.from(_population[_creature._creatureFitness]);
-        creatureList.add(_creature);
-        _population[_creature._creatureFitness] = creatureList;
+        creatureList = new List.from(_population[_creature._creatureFitness]);
       }
+      creatureList.add(_creature);
+      _population[_creature._creatureFitness] = creatureList;
     }
   }
 }
@@ -160,7 +163,7 @@ class Creature {
         "${secondParent._primitiveInscription}");
     List<String> _child = genMutation(secondParent);
     _primitiveInscription = new List.from(_child);
-    _logger.log("\tChild ${_primitiveInscription}");
+    _logger.log("\tChild: ${_primitiveInscription}, fitness: ${_creatureFitness}");
   }
 
   List<String> genMutation(Creature secondParent) {
