@@ -1,6 +1,7 @@
 import 'package:EA_DART/EA_DART.dart' as EA_DART;
 import 'dart:math' as math;
 import 'dart:collection';
+import 'algotithms/levenshtein_distance.dart';
 /**
  *
  */
@@ -10,7 +11,8 @@ main(List<String> arguments) {
   final String _finalInscription = "Hello World";
   final int _fitness = _finalInscription.length;
   final String _correctCharacters = "AĄBCĆDEĘFGHIJKLŁMNŃOÓPQRSŚTUVWXYZŹŻ"
-      + "aąbcćdeęfghijklłmnńoópqrsśtuvwxyzźż";
+      + "aąbcćdeęfghijklłmnńoópqrsśtuvwxyzźż"
+      + " ";
   Population _population = new Population(_finalInscription, _correctCharacters, _fitness, 400, logger);
   while (!_population.calculatePopulationCondition()) {
     logger.log("New population.");
@@ -190,34 +192,9 @@ class Creature {
   void live() {
     _logger.log("Live method.");
 
-    _creatureFitness = _levenshteinDistance(
-        _finalInscription,
-        _primitiveInscription
-    );
-  }
-  int _levenshteinDistance(String _finalInscription, List<String> _primitiveInscription) {
-    var distance = new List.generate(
-        _finalInscription.length + 1, (_) => new List(_primitiveInscription.length + 1)
-    );
-
-    for (int i = 0; i <= _finalInscription.length; i++)
-      distance[i][0] = i;
-    for (int j = 1; j <= _primitiveInscription.length; j++)
-      distance[0][j] = j;
-
-    for (int i = 1; i <= _finalInscription.length; i++) {
-      for (int j = 1; j <= _primitiveInscription.length; j++) {
-        List<int> k = [
-          distance[i - 1][j] + 1,
-          distance[i][j - 1] + 1,
-          distance[i - 1][j - 1] + ((_finalInscription[i - 1] == _primitiveInscription[j - 1]) ? 0 : 1)
-        ];
-
-        distance[i][j] = k.reduce(math.min);
-      }
-    }
-
-    return distance[_finalInscription.length][_primitiveInscription.length];
+    _creatureFitness = (
+      new LevenshteinDistance(_finalInscription, _primitiveInscription)
+    ).build();
   }
 }
 /**
