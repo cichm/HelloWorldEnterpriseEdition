@@ -27,6 +27,7 @@ void main() {
   test("multiple different inscriptions Levenshtein calculate", () {
     String _finalInscription = "Hello World!";
     List<String> _primitiveInscription = ["H", "e", "l", "l", "o", " ", "W", "o", "r", "l", "d", "!"];
+
     int result = (
         new LevenshteinDistance(_finalInscription, _primitiveInscription)
     ).build();
