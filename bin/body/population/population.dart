@@ -1,9 +1,11 @@
 import 'dart:collection';
 import 'dart:math' as math;
 
-import '../algotithms/generate_random_inscription.dart';
-import '../logger/logger.dart';
-import 'creature/creature.dart';
+import '../../algotithms/generate_random_inscription.dart';
+import '../../logger/logger.dart';
+import '../creature/creature.dart';
+import '../creature/creature_details.dart';
+
 
 class Population {
   static String _finalInscription;
@@ -12,6 +14,8 @@ class Population {
   static SplayTreeMap<int, List<Creature>> _population;
   static math.Random _random;
   static Logger _logger;
+
+  static CreatureDetails _creatureDetails;
 
   Population(String finalInscription, String correctCharacters, int fitness,
       int initialPopulation, Logger logger)
@@ -41,21 +45,26 @@ class Population {
       _primitiveInscription = (
           new GenerateRandomInscription(_fitness, correctCharacters)
       ).build();
-      creature = new Creature(
-          _finalInscription, _correctCharacters, _primitiveInscription,
-          _fitness, _logger
+
+      _creatureDetails = new CreatureDetails(
+          _finalInscription, _correctCharacters, _fitness,
+          _primitiveInscription,
       );
+
+      creature = new Creature(_creatureDetails, _logger);
+
       creature.live();
 
       List<Creature> creatureList;
-      if (!_population.containsKey(creature.creatureFitness)) {
+      int creatureFitness = creature.creatureDetails.creatureFitness;
+      if (!_population.containsKey(creatureFitness)) {
         creatureList = new List();
       }
       else {
-        creatureList = new List.from(_population[creature.creatureFitness]);
+        creatureList = new List.from(_population[creatureFitness]);
       }
       creatureList.add(creature);
-      _population[creature.creatureFitness] = creatureList;
+      _population[creatureFitness] = creatureList;
     }
   }
 
@@ -66,8 +75,11 @@ class Population {
     for (int key in _population.keys) {
       _listKeys = new List.from(_population[key]);
       // TODO: Czasem problem z ewolucją, _listKeys.lenght == 1
-      _logger.log("Key for-loop start: ${key}, ${_population[key][0]
-          .primitiveInscription}, ${_listKeys.length}");
+      _logger.log(
+          "Key for-loop start: ${key}, "
+          "${_population[key][0].creatureDetails.primitiveInscription}, "
+          "${_listKeys.length}"
+      );
       for (int counter = 0; counter + 1 < _listKeys.length;
       counter = counter + 2) {
         _logger.log("Randomization parent pairs for-loop.");
@@ -78,14 +90,15 @@ class Population {
           creature.live();
 
           List<Creature> creatureList;
-          if (!_childPopulation.containsKey(creature.creatureFitness)) {
+          int creatureFitness = creature.creatureDetails.creatureFitness;
+          if (!_childPopulation.containsKey(creatureFitness)) {
             creatureList = new List();
           }
           else {
-            creatureList = new List.from(_childPopulation[creature.creatureFitness]);
+            creatureList = new List.from(_childPopulation[creatureFitness]);
           }
           creatureList.add(creature);
-          _childPopulation[creature.creatureFitness] = creatureList;
+          _childPopulation[creatureFitness] = creatureList;
         }
       }
     }
