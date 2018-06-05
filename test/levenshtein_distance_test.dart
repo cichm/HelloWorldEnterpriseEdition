@@ -1,7 +1,7 @@
 import 'package:EA_DART/EA_DART.dart';
 import 'package:test/test.dart';
 
-import '../bin/algotithms/levenshtein_distance.dart';
+import '../body/algotithms/levenshtein_distance.dart';
 
 void main() {
   test("single inscription Levenshtein calculate", () {

@@ -5,34 +5,25 @@ import '../../algotithms/generate_random_inscription.dart';
 import '../../logger/logger.dart';
 import '../creature/creature.dart';
 import '../creature/creature_details.dart';
-
+import 'population_details.dart';
 
 class Population {
-  static String _finalInscription;
-  static String _correctCharacters;
-  static int _fitness;
-  static SplayTreeMap<int, List<Creature>> _population;
+  PopulationDetails populationDetails;
+
   static math.Random _random;
   static Logger _logger;
 
   static CreatureDetails _creatureDetails;
+  static PopulationDetails _populationDetails;
 
-  Population(String finalInscription, String correctCharacters, int fitness,
-      int initialPopulation, Logger logger)
-      :assert(finalInscription != ""),
-        assert(correctCharacters != ""),
-        assert(fitness != 0),
-        assert(initialPopulation != 0) {
+  Population(
+      int initialPopulation, Logger logger, PopulationDetails populationDetails)
+      :assert(initialPopulation != 0) {
     logger.log("Default constructor start.");
-    _finalInscription = finalInscription;
-    _correctCharacters = correctCharacters;
-    _fitness = fitness;
+    _populationDetails = populationDetails;
     _random = new math.Random();
     _logger = logger;
-    _population = new SplayTreeMap<int, List<Creature>>();
-
-    _initializePopulation(initialPopulation, correctCharacters);
-
+    _initializePopulation(initialPopulation, _populationDetails.correctCharacters);
     logger.log("Default constructor end.");
   }
 
@@ -43,12 +34,12 @@ class Population {
     for (int counter = 0; counter < initialPopulation - 1; counter++) {
       _logger.log("Get all creatures, and randomize characters.");
       _primitiveInscription = (
-          new GenerateRandomInscription(_fitness, correctCharacters)
+          new GenerateRandomInscription(_populationDetails.fitness, correctCharacters)
       ).build();
 
       _creatureDetails = new CreatureDetails(
-          _finalInscription, _correctCharacters, _fitness,
-          _primitiveInscription,
+        _populationDetails.finalInscription, _populationDetails.correctCharacters,
+        _populationDetails.fitness, _primitiveInscription,
       );
 
       creature = new Creature(_creatureDetails, _logger);
@@ -57,14 +48,14 @@ class Population {
 
       List<Creature> creatureList;
       int creatureFitness = creature.creatureDetails.creatureFitness;
-      if (!_population.containsKey(creatureFitness)) {
+      if (!_populationDetails.population.containsKey(creatureFitness)) {
         creatureList = new List();
       }
       else {
-        creatureList = new List.from(_population[creatureFitness]);
+        creatureList = new List.from(_populationDetails.population[creatureFitness]);
       }
       creatureList.add(creature);
-      _population[creatureFitness] = creatureList;
+      _populationDetails.population[creatureFitness] = creatureList;
     }
   }
 
@@ -72,12 +63,12 @@ class Population {
     _logger.log("Constructor [mutation] start.");
     List<Creature> _listKeys = new List();
     SplayTreeMap<int, List<Creature>> _childPopulation = new SplayTreeMap();
-    for (int key in _population.keys) {
-      _listKeys = new List.from(_population[key]);
+    for (int key in _populationDetails.population.keys) {
+      _listKeys = new List.from(_populationDetails.population[key]);
       // TODO: Czasem problem z ewolucją, _listKeys.lenght == 1
       _logger.log(
           "Key for-loop start: ${key}, "
-          "${_population[key][0].creatureDetails.primitiveInscription}, "
+          "${_populationDetails.population[key][0].creatureDetails.primitiveInscription}, "
           "${_listKeys.length}"
       );
       for (int counter = 0; counter + 1 < _listKeys.length;
@@ -104,23 +95,22 @@ class Population {
     }
 
     void iterateMapEntry(key, value) {
-      if (_population[key] == null) _population[key] = new List();
-      _population[key].addAll(value);
+      if (_populationDetails.population[key] == null) _populationDetails.population[key] = new List();
+      _populationDetails.population[key].addAll(value);
     }
     _childPopulation.forEach(iterateMapEntry);
 
-    int currentPopulationSize = _population.length;
+    int currentPopulationSize = _populationDetails.population.length;
     _removeWeak(currentPopulationSize);
   }
 
-  bool calculatePopulationCondition() => _population[0] != null;
+  bool calculatePopulationCondition() => _populationDetails.population[0] != null;
 
   void _removeWeak(int currentPopulationSize) {
     _logger.log("Remove old -  method.");
-    if (_population.length > 3) {
-      for (int counter = _population.lastKey(); counter >=
-          _population.firstKey() + 2; counter--) {
-        _population.remove(_population.lastKey());
+    if (_populationDetails.population.length > 3) {
+      for (int counter = _populationDetails.population.lastKey(); (counter >= _populationDetails.population.firstKey() + 2 && _populationDetails.population.firstKey() + 2 > 3); counter--) {
+        _populationDetails.population.remove(_populationDetails.population.lastKey());
       }
     }
   }
