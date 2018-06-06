@@ -10,7 +10,7 @@ class Creature {
   CreatureDetails _creatureDetails;
 
   // TODO:
-  final Logger _logger;
+  Logger _logger;
 
   Creature(this._creatureDetails, this._logger) {
     _random = new math.Random();

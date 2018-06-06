@@ -8,15 +8,13 @@ import '../creature/creature_details.dart';
 import 'population_details.dart';
 
 class Population {
-  PopulationDetails populationDetails;
-
   static math.Random _random;
   static Logger _logger;
 
   static CreatureDetails _creatureDetails;
   static PopulationDetails _populationDetails;
 
-  Population(
+  Population._internal(
       int initialPopulation, Logger logger, PopulationDetails populationDetails)
       :assert(initialPopulation != 0) {
     logger.log("Default constructor start.");
@@ -25,6 +23,10 @@ class Population {
     _logger = logger;
     _initializePopulation(initialPopulation, _populationDetails.correctCharacters);
     logger.log("Default constructor end.");
+  }
+
+  static createPopulation(int initialPopulation, Logger logger, PopulationDetails populationDetails) {
+    return new Population._internal(initialPopulation, logger, populationDetails);
   }
 
   void _initializePopulation(int initialPopulation, String correctCharacters) {
@@ -43,7 +45,6 @@ class Population {
       );
 
       creature = new Creature(_creatureDetails, _logger);
-
       creature.live();
 
       List<Creature> creatureList;

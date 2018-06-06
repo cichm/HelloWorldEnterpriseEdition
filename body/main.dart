@@ -11,12 +11,48 @@ main(List<String> arguments) {
   final int _fitness = _finalInscription.length;
   final String _correctCharacters = "AĄBCĆDEĘFGHIJKLŁMNŃOÓPQRSŚTUVWXYZŹŻ" + " ";
 
-  Population _population = new Population(400, logger,
-      new PopulationDetails(_finalInscription, _correctCharacters, _fitness, new SplayTreeMap())
-  );
+  // STATIC FACTORY METHOD
+  Population _population = Population.createPopulation(400, logger, new PopulationDetails(_finalInscription, _correctCharacters, _fitness, new SplayTreeMap()));
 
   while (!_population.calculatePopulationCondition()) {
     logger.log("New population.");
     _population = new Population.mutation();
   }
+
+//  final Pizza pizza = new PizzaBuilder().setCrust().setSauce().build();
+//  print(pizza);
+//  print("");
 }
+
+//class Pizza {
+//  String _sauce;
+//  String _crust;
+//
+//  Pizza(PizzaBuilder pizzaBuilder) {
+//    this._sauce = pizzaBuilder.sauce;
+//    this._crust = pizzaBuilder.crust;
+//  }
+//
+//  String get crust => _crust;
+//
+//  String get sauce => _sauce;
+//}
+//
+//class PizzaBuilder {
+//  String sauce;
+//  String crust;
+//
+//  PizzaBuilder setSauce() {
+//    this.sauce = "1234";
+//    return this;
+//  }
+//
+//  PizzaBuilder setCrust() {
+//    this.crust = "1234";
+//    return this;
+//  }
+//
+//  Pizza build() {
+//    return new Pizza(this);
+//  }
+//}
