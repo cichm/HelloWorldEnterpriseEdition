@@ -2,28 +2,43 @@ import 'dart:collection';
 import 'dart:math' as math;
 
 import '../../algotithms/generate_random_inscription.dart';
+import '../../initialize_project.dart';
 import '../../logger/logger.dart';
+import '../FinitStateMachine/finit_state_machine.dart';
+import '../FinitStateMachine/state.dart';
+import '../Observer/observer.dart';
 import '../creature/creature.dart';
+import '../creature/creature_builder_.dart';
 import '../creature/creature_details.dart';
 import 'population_details.dart';
 
-class Population {
+class Population extends State {
   static math.Random _random;
   static Logger _logger;
-
   static CreatureDetails _creatureDetails;
   static PopulationDetails _populationDetails;
+  static List<Observer> list;
+  Creature _creature;
+  List<Creature> _creatureList;
+
+  Population();
 
   Population._internal(
       int initialPopulation, Logger logger, PopulationDetails populationDetails)
-      :assert(initialPopulation != 0) {
+      : assert(initialPopulation != 0) {
     logger.log("Default constructor start.");
+
+    list = new List();
+    list.add(new InitializeProject());
+
     _populationDetails = populationDetails;
     _random = new math.Random();
     _logger = logger;
     _initializePopulation(initialPopulation, _populationDetails.correctCharacters);
     logger.log("Default constructor end.");
   }
+
+  void notifyObservers() => list.forEach((element) => element.notify());
 
   static createPopulation(int initialPopulation, Logger logger, PopulationDetails populationDetails) {
     return new Population._internal(initialPopulation, logger, populationDetails);
@@ -32,36 +47,49 @@ class Population {
   void _initializePopulation(int initialPopulation, String correctCharacters) {
     _logger.log("Initializa population function.");
     List<String> _primitiveInscription;
-    Creature creature;
+
     for (int counter = 0; counter < initialPopulation - 1; counter++) {
       _logger.log("Get all creatures, and randomize characters.");
-      _primitiveInscription = (
-          new GenerateRandomInscription(_populationDetails.fitness, correctCharacters)
-      ).build();
 
-      _creatureDetails = new CreatureDetails(
-        _populationDetails.finalInscription, _populationDetails.correctCharacters,
-        _populationDetails.fitness, _primitiveInscription,
-      );
+      _primitiveInscription = creatureToList(_primitiveInscription, correctCharacters);
 
-      creature = new Creature(_creatureDetails, _logger);
-      creature.live();
+      FinitStateMachine finitStateMachine = new FinitStateMachine();
+      for(final int msg in [0, 1]){
+        if (msg == 0) {
+          finitStateMachine.buildInscription(_primitiveInscription);
+        }
+        else if (msg == 1) {
+          finitStateMachine.clearData();
+        }
+      }
 
-      List<Creature> creatureList;
-      int creatureFitness = creature.creatureDetails.creatureFitness;
+      // BUILDER
+      _creature = new CreatureBuilder().withCreature(_creatureDetails).withLogger(_logger).build();
+      _creature.live();
+
+      int creatureFitness = _creature.creatureDetails.creatureFitness;
       if (!_populationDetails.population.containsKey(creatureFitness)) {
-        creatureList = new List();
+        _creatureList = new List();
       }
       else {
-        creatureList = new List.from(_populationDetails.population[creatureFitness]);
+        _creatureList = new List.from(_populationDetails.population[creatureFitness]);
       }
-      creatureList.add(creature);
-      _populationDetails.population[creatureFitness] = creatureList;
+      _creatureList.add(_creature);
+      _populationDetails.population[creatureFitness] = _creatureList;
     }
+  }
+
+
+  List<String> creatureToList(List<String> _primitiveInscription, String correctCharacters) {
+    _primitiveInscription = (
+        new GenerateRandomInscription(_populationDetails.fitness, correctCharacters)
+    ).build();
+    return _primitiveInscription;
   }
 
   Population.mutation() {
     _logger.log("Constructor [mutation] start.");
+
     List<Creature> _listKeys = new List();
     SplayTreeMap<int, List<Creature>> _childPopulation = new SplayTreeMap();
     for (int key in _populationDetails.population.keys) {
@@ -72,8 +100,7 @@ class Population {
           "${_populationDetails.population[key][0].creatureDetails.primitiveInscription}, "
           "${_listKeys.length}"
       );
-      for (int counter = 0; counter + 1 < _listKeys.length;
-      counter = counter + 2) {
+      for (int counter = 0; counter + 1 < _listKeys.length; counter = counter + 2) {
         _logger.log("Randomization parent pairs for-loop.");
         int childsNumber = _random.nextInt(7);
         for (int count = 0; count < childsNumber; count++) {
@@ -105,7 +132,15 @@ class Population {
     _removeWeak(currentPopulationSize);
   }
 
-  bool calculatePopulationCondition() => _populationDetails.population[0] != null;
+  bool calculatePopulationCondition() {
+    if (_populationDetails.population[0] == null) {
+      return false;
+    }
+
+    notifyObservers();
+
+    return true;
+  }
 
   void _removeWeak(int currentPopulationSize) {
     _logger.log("Remove old -  method.");
@@ -114,5 +149,19 @@ class Population {
         _populationDetails.population.remove(_populationDetails.population.lastKey());
       }
     }
+  }
+
+  @override
+  void buildInscription(List<String> _primitiveInscription) {
+    _creatureDetails = new CreatureDetails(
+      _populationDetails.finalInscription, _populationDetails.correctCharacters,
+      _populationDetails.fitness, _primitiveInscription,
+    );
+  }
+
+  @override
+  void clearData() {
+    _creature = null;
+    _creatureList = null;
   }
 }

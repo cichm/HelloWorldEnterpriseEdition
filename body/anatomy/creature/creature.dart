@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import '../../algotithms/levenshtein_distance.dart';
 import '../../logger/logger.dart';
+import 'creature_builder_.dart';
 import 'creature_details.dart';
 
 class Creature {
@@ -9,11 +10,13 @@ class Creature {
 
   CreatureDetails _creatureDetails;
 
-  // TODO:
   Logger _logger;
 
-  Creature(this._creatureDetails, this._logger) {
+  Creature(CreatureBuilder creatureBuilder) {
     _random = new math.Random();
+
+    this._creatureDetails = creatureBuilder.creatureDetails;
+    this._logger = creatureBuilder.logger;
   }
 
   CreatureDetails get creatureDetails => _creatureDetails;
