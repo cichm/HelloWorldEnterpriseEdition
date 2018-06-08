@@ -5,8 +5,4 @@ abstract class Decorator implements IRandomCreatureAlgorithm {
   MainRandomCreatureAlgorithm mainRandomCreatureAlgorithm;
 
   Decorator(this.mainRandomCreatureAlgorithm);
-
-  String randomCharacter() {
-    return mainRandomCreatureAlgorithm.randomCharacter();
-  }
 }

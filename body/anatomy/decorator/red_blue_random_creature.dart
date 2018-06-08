@@ -3,9 +3,17 @@ import 'main_random_creature_algorithm.dart';
 
 class RedBlueRandomCreature extends Decorator {
   RedBlueRandomCreature(MainRandomCreatureAlgorithm mainRandomCreatureAlgorithm)
-      : super(mainRandomCreatureAlgorithm);
+      : super(mainRandomCreatureAlgorithm) {
+    print("");
+  }
 
-  String randomCharacter() {
-    return super.randomCharacter();
+  List randomCharacter() {
+    List randomCreature = super.mainRandomCreatureAlgorithm.randomCharacter();
+
+    if (randomCreature[0][1] <= 1) {
+//      randomCreature[0][0] = randomCreature.correctCharacters["2"];
+    }
+
+    return randomCreature;
   }
 }

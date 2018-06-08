@@ -1,3 +1,3 @@
 abstract class IRandomCreatureAlgorithm {
-  String randomCharacter();
+  List randomCharacter();
 }

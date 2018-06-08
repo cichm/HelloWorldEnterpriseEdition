@@ -12,15 +12,20 @@ class MainRandomCreatureAlgorithm implements IRandomCreatureAlgorithm{
   MainRandomCreatureAlgorithm(this._randomMutalValue, this._creatureDetails,
       this._secondParent, this._counter, this._nextRandom);
 
-  String randomCharacter() {
-    if (_randomMutalValue <= 1) {
-      return _creatureDetails.correctCharacters[_nextRandom];
+  List<String> randomCharacter() {
+    List creatureCharacterItem = new List();
+    String character;
+/*    if (_randomMutalValue <= 1) {
+      character = _creatureDetails.correctCharacters[_nextRandom];
     }
-    else if(_randomMutalValue <= 60) {
-      return _creatureDetails.primitiveInscription[_counter];
+    else */if(_randomMutalValue <= 60) {
+      character = _creatureDetails.primitiveInscription[_counter];
     }
     else {
-      return _secondParent.creatureDetails.primitiveInscription[_counter];
+      character = _secondParent.creatureDetails.primitiveInscription[_counter];
     }
+
+    creatureCharacterItem.add([character, _randomMutalValue]);
+    return creatureCharacterItem;
   }
 }

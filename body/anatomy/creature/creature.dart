@@ -41,7 +41,8 @@ class Creature {
       // DECORATOR
       RedBlueRandomCreature redBlueRandomCreature = new RedBlueRandomCreature(new MainRandomCreatureAlgorithm(randomMutalValue, _creatureDetails, secondParent, counter, nextRandom));
 
-      _child[counter] = redBlueRandomCreature.randomCharacter();
+      List creatureCharacter = redBlueRandomCreature.randomCharacter();
+      _child[counter] = creatureCharacter[0][0];
     }
     return _child;
   }
