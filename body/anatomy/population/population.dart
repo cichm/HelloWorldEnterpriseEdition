@@ -34,17 +34,15 @@ class Population extends State {
     _populationDetails = populationDetails;
     _random = new math.Random();
     _logger = logger;
-    _initializePopulation(initialPopulation, _populationDetails.correctCharacters);
+    initializePopulation(initialPopulation, _populationDetails.correctCharacters);
     logger.log("Default constructor end.");
   }
 
   void notifyObservers() => list.forEach((element) => element.notify());
 
-  static createPopulation(int initialPopulation, Logger logger, PopulationDetails populationDetails) {
-    return new Population._internal(initialPopulation, logger, populationDetails);
-  }
+  static createPopulation(int initialPopulation, Logger logger, PopulationDetails populationDetails) => new Population._internal(initialPopulation, logger, populationDetails);
 
-  void _initializePopulation(int initialPopulation, String correctCharacters) {
+  void initializePopulation(int initialPopulation, String correctCharacters) {
     _logger.log("Initializa population function.");
     List<String> _primitiveInscription;
 
