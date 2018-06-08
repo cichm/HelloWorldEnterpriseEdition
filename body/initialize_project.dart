@@ -12,17 +12,17 @@ class InitializeProject implements Observer {
   void initialize() {
     final Logger logger = new Logger("Main");
     logger.log("Main method started.");
-    final String _finalInscription = "AAA";
+    final String _finalInscription = "AAAAA";
     final int _fitness = _finalInscription.length;
     final String _correctCharacters = "AĄBCĆDEĘFGHIJKLŁMNŃOÓPQRSŚTUVWXYZŹŻ" + " ";
 
     _populationDetails = new PopulationDetails(_finalInscription, _correctCharacters, _fitness, new SplayTreeMap());
     // STATIC FACTORY METHOD
-    Population _population = Population.createPopulation(400, logger, _populationDetails);
+    Population population = Population.createPopulation(400, logger, _populationDetails);
 
-    while (!_population.calculatePopulationCondition()) {
+    while (!population.calculatePopulationCondition()) {
       logger.log("New population.");
-      _population = new Population.mutation();
+      population = new Population.mutation();
     }
   }
 

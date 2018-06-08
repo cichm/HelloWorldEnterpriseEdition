@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import '../../algotithms/levenshtein_distance.dart';
 import '../../logger/logger.dart';
+import '../decorator/red_blue_random_creature.dart';
+import '../decorator/main_random_creature_algorithm.dart';
 import 'creature_builder_.dart';
 import 'creature_details.dart';
 
@@ -33,16 +35,13 @@ class Creature {
     int _fitness = _creatureDetails.fitness;
     List<String> _child = new List(_fitness);
     for (int counter = 0; counter < _fitness; counter++) {
-      int randomMutalValue = _random.nextInt(100);
-      if (randomMutalValue <= 1) {
-        _child[counter] = _creatureDetails.correctCharacters[_random.nextInt(_fitness)];
-      }
-      else if(randomMutalValue <= 60) {
-        _child[counter] = _creatureDetails.primitiveInscription[counter];
-      }
-      else {
-        _child[counter] = creatureDetails.primitiveInscription[counter];
-      }
+      final int randomMutalValue = _random.nextInt(100);
+      final int nextRandom = _random.nextInt(_fitness);
+
+      // DECORATOR
+      RedBlueRandomCreature redBlueRandomCreature = new RedBlueRandomCreature(new MainRandomCreatureAlgorithm(randomMutalValue, _creatureDetails, secondParent, counter, nextRandom));
+
+      _child[counter] = redBlueRandomCreature.randomCharacter();
     }
     return _child;
   }
