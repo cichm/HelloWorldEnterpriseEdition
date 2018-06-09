@@ -9,9 +9,7 @@ import 'creature_details.dart';
 
 class Creature {
   static math.Random _random;
-
   CreatureDetails _creatureDetails;
-
   Logger _logger;
 
   Creature(CreatureBuilder creatureBuilder) {

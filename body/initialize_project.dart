@@ -12,11 +12,11 @@ class InitializeProject implements Observer {
   void initialize() {
     final Logger logger = new Logger("Main");
     logger.log("Main method started.");
-    final String _finalInscription = "HELLO";
-    final int _fitness = _finalInscription.length;
-    final String _correctCharacters = "AĄBCĆDEĘFGHIJKLŁMNŃOÓPQRSŚTUVWXYZŹŻ" + " ";
+    final String finalInscription = "AAAAA";
+    final int fitness = finalInscription.length;
+    final String correctCharacters = "AĄBCĆDEĘFGHIJKLŁMNŃOÓPQRSŚTUVWXYZŹŻ" + " ";
 
-    _populationDetails = new PopulationDetails(_finalInscription, _correctCharacters, _fitness, new SplayTreeMap());
+    _populationDetails = new PopulationDetails(finalInscription, correctCharacters, fitness, new SplayTreeMap());
     // STATIC FACTORY METHOD
     Population population = Population.createPopulation(400, logger, _populationDetails);
 

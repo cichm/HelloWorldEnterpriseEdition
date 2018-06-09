@@ -77,7 +77,6 @@ class Population extends State {
     }
   }
 
-
   List<String> creatureToList(List<String> _primitiveInscription, String correctCharacters) {
     _primitiveInscription = (
         new GenerateRandomInscription(_populationDetails.fitness, correctCharacters)
@@ -92,7 +91,6 @@ class Population extends State {
     SplayTreeMap<int, List<Creature>> _childPopulation = new SplayTreeMap();
     for (int key in _populationDetails.population.keys) {
       _listKeys = new List.from(_populationDetails.population[key]);
-      // TODO: Czasem problem z ewolucją, _listKeys.lenght == 1
       _logger.log(
           "Key for-loop start: ${key}, "
           "${_populationDetails.population[key][0].creatureDetails.primitiveInscription}, "
@@ -139,6 +137,8 @@ class Population extends State {
 
     return true;
   }
+
+  SplayTreeMap<int, List<Creature>> get population => _populationDetails.population;
 
   void _removeWeak(int currentPopulationSize) {
     _logger.log("Remove old -  method.");
