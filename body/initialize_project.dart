@@ -12,7 +12,7 @@ class InitializeProject implements Observer {
   void initialize() {
     final Logger logger = new Logger("Main");
     logger.log("Main method started.");
-    final String _finalInscription = "AAAAA";
+    final String _finalInscription = "HELLO";
     final int _fitness = _finalInscription.length;
     final String _correctCharacters = "AĄBCĆDEĘFGHIJKLŁMNŃOÓPQRSŚTUVWXYZŹŻ" + " ";
 
