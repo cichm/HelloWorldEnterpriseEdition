@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:collection';
 import 'anatomy/Observer/observer.dart';
 import 'anatomy/population/population.dart';
@@ -6,6 +7,12 @@ import 'logger/logger.dart';
 
 class InitializeProject implements Observer {
   PopulationDetails _populationDetails;
+
+  DateTime _startInstant;
+
+  InitializeProject() {
+    _startInstant = new DateTime.now();
+  }
 
   PopulationDetails get populationDetails => _populationDetails;
 
@@ -28,6 +35,11 @@ class InitializeProject implements Observer {
 
   @override
   void notify() {
-    print("THE END!");
+    final String filename = 'report.txt';
+    final DateTime endInstant = new DateTime.now();
+    new File(filename).writeAsString('Start instant: ' + _startInstant.toString() + ', end instant: ' + endInstant.toString() + '.')
+        .then((File file) {
+      print("Save report in " + file.path);
+    });
   }
 }
